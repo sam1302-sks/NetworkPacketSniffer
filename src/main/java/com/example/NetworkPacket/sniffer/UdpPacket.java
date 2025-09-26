@@ -1,23 +1,23 @@
-package com.example.NetworkPacket.Packet;
+package com.example.NetworkPacket.sniffer;
 
-public class TcpPacket extends Packet {
+public class UdpPacket extends Packet {
     private int srcPort;
     private int destPort;
 
-    public TcpPacket(String srcIP, int srcPort, String destIP, int destPort, String data) {
+    public UdpPacket(String srcIP, int srcPort, String destIP, int destPort, String data) {
         super(srcIP, destIP, data);
         this.srcPort = srcPort;
         this.destPort = destPort;
     }
 
     @Override
-    public String getType() { return "TCP"; }
+    public String getType() { return "UDP"; }
 
     public int getSrcPort() { return srcPort; }
     public int getDestPort() { return destPort; }
 
     @Override
     public String getSummary() {
-        return String.format("[TCP] %s:%d -> %s:%d : %s", srcIP, srcPort, destIP, destPort, data);
+        return String.format("[UDP] %s:%d -> %s:%d : %s", srcIP, srcPort, destIP, destPort, data);
     }
 }

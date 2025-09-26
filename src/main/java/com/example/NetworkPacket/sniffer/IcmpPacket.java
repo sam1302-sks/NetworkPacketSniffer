@@ -1,6 +1,4 @@
-package com.example.NetworkPacket.Packet;
-
-import com.example.NetworkPacket.Packet.Packet;
+package com.example.NetworkPacket.sniffer;
 
 public class IcmpPacket extends Packet {
     private int typeCode; // simple numeric code

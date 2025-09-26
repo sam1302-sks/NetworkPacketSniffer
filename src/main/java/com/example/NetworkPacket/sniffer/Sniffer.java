@@ -1,4 +1,4 @@
-package com.example.NetworkPacket.Packet;
+package com.example.NetworkPacket.sniffer;
 
 import com.example.NetworkPacket.Filter.PacketFilter;
 

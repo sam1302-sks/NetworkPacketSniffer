@@ -1,4 +1,4 @@
-package com.example.NetworkPacket.Packet;
+package com.example.NetworkPacket.sniffer;
 
 import com.example.NetworkPacket.Exception.InvalidPacketException;
 
@@ -10,7 +10,7 @@ public abstract class Packet {
 
     public Packet(String srcIP, String destIP, String data) {
         if (srcIP == null || destIP == null || data == null) {
-            throw new InvalidPacketException("Null field in packet");
+            throw new InvalidPacketException("Nope nothing in it");
         }
         this.srcIP = srcIP;
         this.destIP = destIP;
