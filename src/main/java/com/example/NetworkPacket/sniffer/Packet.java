@@ -1,5 +1,4 @@
 package com.example.NetworkPacket.sniffer;
-
 import com.example.NetworkPacket.Exception.InvalidPacketException;
 
 public abstract class Packet {
