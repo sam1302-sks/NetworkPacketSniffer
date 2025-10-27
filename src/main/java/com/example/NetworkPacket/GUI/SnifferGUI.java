@@ -27,34 +27,37 @@ public class SnifferGUI extends JFrame {
     private PacketGenerator generator;
     private JLabel statusLabel;
     private JLabel packetCountLabel;
-    private JButton startBtn, stopBtn, tcpBtn, udpBtn, allBtn, saveBtn, clearBtn;
+    private JButton startBtn, stopBtn, saveBtn, clearBtn;
+    private JComboBox<String> filterDropdown;
 
-    // Color scheme
-    private final Color PRIMARY_COLOR = new Color(41, 128, 185);
-    private final Color SECONDARY_COLOR = new Color(52, 152, 219);
-    private final Color ACCENT_COLOR = new Color(46, 204, 113);
-    private final Color DANGER_COLOR = new Color(231, 76, 60);
-    private final Color BACKGROUND_COLOR = new Color(245, 245, 245);
-    private final Color TABLE_HEADER_COLOR = new Color(52, 73, 94);
+    // Dark Mode Professional Color Scheme
+    private final Color BG_DARK = new Color(18, 18, 18);           // Deep black background
+    private final Color BG_SECONDARY = new Color(28, 28, 30);      // Secondary background
+    private final Color BG_ELEVATED = new Color(38, 38, 42);       // Elevated surfaces
+    private final Color ACCENT_PRIMARY = new Color(10, 132, 255);  // Modern blue
+    private final Color ACCENT_SUCCESS = new Color(48, 209, 88);   // Green for success
+    private final Color ACCENT_WARNING = new Color(255, 159, 10);  // Orange for warning
+    private final Color ACCENT_DANGER = new Color(255, 69, 58);    // Red for danger
+    private final Color TEXT_PRIMARY = new Color(255, 255, 255);   // White text
+    private final Color TEXT_SECONDARY = new Color(152, 152, 157); // Gray text
+    private final Color BORDER_COLOR = new Color(58, 58, 60);      // Subtle borders
+    private final Color TABLE_GRID = new Color(48, 48, 52);        // Table grid
+    private final Color SELECTION_BG = new Color(10, 132, 255, 40); // Selection highlight
 
     public SnifferGUI(Sniffer sniffer) {
-        super("🌐 Packet Sniffer - Network Analyzer");
+        super("Network Packet Analyzer");
         this.sniffer = sniffer;
 
-        // Set modern look and feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Set dark theme properties
+        setDarkTheme();
 
         tableModel = new PacketTableModel(sniffer.getAll());
         table = new JTable(tableModel);
-        setupModernUI();
+        setupModernDarkUI();
         setupLayout();
-        setSize(1200, 700);
+        setSize(1400, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Center the window
+        setLocationRelativeTo(null);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -65,44 +68,80 @@ public class SnifferGUI extends JFrame {
         });
     }
 
-    private void setupModernUI() {
-        // Custom table styling
-        table.setRowHeight(30);
+    private void setDarkTheme() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            // Set dark theme for various UI components
+            UIManager.put("OptionPane.background", BG_SECONDARY);
+            UIManager.put("Panel.background", BG_SECONDARY);
+            UIManager.put("OptionPane.messageForeground", TEXT_PRIMARY);
+            UIManager.put("Button.background", BG_ELEVATED);
+            UIManager.put("Button.foreground", TEXT_PRIMARY);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupModernDarkUI() {
+        // Table styling with dark theme
+        table.setBackground(BG_SECONDARY);
+        table.setForeground(TEXT_PRIMARY);
+        table.setRowHeight(36);
         table.setShowGrid(true);
-        table.setGridColor(new Color(230, 230, 230));
-        table.setSelectionBackground(SECONDARY_COLOR);
-        table.setSelectionForeground(Color.WHITE);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        table.setGridColor(TABLE_GRID);
+        table.setSelectionBackground(SELECTION_BG);
+        table.setSelectionForeground(TEXT_PRIMARY);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        table.setIntercellSpacing(new Dimension(0, 0));
 
-        // Custom table header
+        // Custom table header with dark theme
         JTableHeader header = table.getTableHeader();
-        header.setBackground(TABLE_HEADER_COLOR);
-        header.setForeground(Color.WHITE);
-        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        header.setPreferredSize(new Dimension(header.getWidth(), 35));
+        header.setBackground(BG_ELEVATED);
+        header.setForeground(TEXT_SECONDARY);
+        header.setFont(new Font("SF Pro Display", Font.BOLD, 13));
+        header.setPreferredSize(new Dimension(header.getWidth(), 42));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR));
 
-        // Center align all columns
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        // Custom cell renderer for dark theme
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? BG_SECONDARY : BG_DARK);
+                    c.setForeground(TEXT_PRIMARY);
+                } else {
+                    c.setBackground(SELECTION_BG);
+                    c.setForeground(TEXT_PRIMARY);
+                }
+
+                setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
+                setHorizontalAlignment(JLabel.CENTER);
+                return c;
+            }
+        };
+
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
     private void setupLayout() {
-        setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        setLayout(new BorderLayout(0, 0));
+        getContentPane().setBackground(BG_DARK);
 
-        // Create main panel with padding
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-        mainPanel.setBackground(BACKGROUND_COLOR);
+        // Create main panel
+        JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+        mainPanel.setBackground(BG_DARK);
 
         // Header Panel
         JPanel headerPanel = createHeaderPanel();
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Table Panel with styled border
+        // Table Panel
         JPanel tablePanel = createTablePanel();
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 
@@ -114,7 +153,7 @@ public class SnifferGUI extends JFrame {
 
         // Timer to refresh UI
         Timer t = new Timer(1000, e -> {
-            refreshTable(p -> true);
+            refreshTable(getFilterFromDropdown());
             updateStatus();
         });
         t.start();
@@ -122,112 +161,186 @@ public class SnifferGUI extends JFrame {
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBackground(BG_SECONDARY);
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                new EmptyBorder(15, 20, 15, 20)
+                BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR),
+                new EmptyBorder(20, 30, 20, 30)
         ));
 
-        // Title
-        JLabel titleLabel = new JLabel("🌐 Network Packet Sniffer");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titleLabel.setForeground(PRIMARY_COLOR);
+        // Left side - Title
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        leftPanel.setBackground(BG_SECONDARY);
 
-        // Status panel
+        JLabel iconLabel = new JLabel("◈");
+        iconLabel.setFont(new Font("Dialog", Font.BOLD, 28));
+        iconLabel.setForeground(ACCENT_PRIMARY);
+        iconLabel.setBorder(new EmptyBorder(0, 0, 0, 12));
+
+        JLabel titleLabel = new JLabel("Network Packet Analyzer");
+        titleLabel.setFont(new Font("Dialog", Font.BOLD, 22));
+        titleLabel.setForeground(TEXT_PRIMARY);
+
+        leftPanel.add(iconLabel);
+        leftPanel.add(titleLabel);
+
+        // Right side - Status
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
-        statusPanel.setBackground(Color.WHITE);
+        statusPanel.setBackground(BG_SECONDARY);
 
-        statusLabel = new JLabel("⏹️ Stopped");
-        statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        statusLabel.setForeground(DANGER_COLOR);
+        packetCountLabel = new JLabel("0 packets");
+        packetCountLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        packetCountLabel.setForeground(TEXT_SECONDARY);
 
-        packetCountLabel = new JLabel("📊 Packets: 0");
-        packetCountLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        statusLabel = new JLabel("● Stopped");
+        statusLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        statusLabel.setForeground(TEXT_SECONDARY);
 
-        statusPanel.add(statusLabel);
         statusPanel.add(packetCountLabel);
+        statusPanel.add(createDivider());
+        statusPanel.add(statusLabel);
 
-        headerPanel.add(titleLabel, BorderLayout.WEST);
+        headerPanel.add(leftPanel, BorderLayout.WEST);
         headerPanel.add(statusPanel, BorderLayout.EAST);
 
         return headerPanel;
     }
 
+    private JLabel createDivider() {
+        JLabel divider = new JLabel("│");
+        divider.setForeground(BORDER_COLOR);
+        divider.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        return divider;
+    }
+
     private JPanel createTablePanel() {
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                "Captured Packets",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 14),
-                PRIMARY_COLOR
-        ));
-        tablePanel.setBackground(Color.WHITE);
+        JPanel tablePanel = new JPanel(new BorderLayout(0, 0));
+        tablePanel.setBackground(BG_DARK);
+        tablePanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+        scrollPane.getViewport().setBackground(BG_SECONDARY);
+        scrollPane.setBackground(BG_SECONDARY);
 
-        // Add some nice styling to scrollbar
+        // Style scrollbars
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(16);
-        verticalScrollBar.setBackground(Color.WHITE);
+        verticalScrollBar.setBackground(BG_ELEVATED);
+        verticalScrollBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(80, 80, 85);
+                this.trackColor = BG_ELEVATED;
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                return button;
+            }
+        });
 
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         return tablePanel;
     }
 
     private JPanel createControlPanel() {
-        JPanel controlPanel = new JPanel(new BorderLayout());
-        controlPanel.setBackground(BACKGROUND_COLOR);
+        JPanel controlPanel = new JPanel(new BorderLayout(0, 0));
+        controlPanel.setBackground(BG_DARK);
+        controlPanel.setBorder(new EmptyBorder(15, 20, 20, 20));
 
-        // Filter Panel
-        JPanel filterPanel = createFilterPanel();
-        controlPanel.add(filterPanel, BorderLayout.NORTH);
+        // Main controls container
+        JPanel controlsContainer = new JPanel(new BorderLayout(20, 0));
+        controlsContainer.setBackground(BG_SECONDARY);
+        controlsContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                new EmptyBorder(16, 20, 16, 20)
+        ));
 
-        // Button Panel
-        JPanel buttonPanel = createButtonPanel();
-        controlPanel.add(buttonPanel, BorderLayout.CENTER);
+        // Left side - Filter dropdown
+        JPanel leftControls = createFilterPanel();
 
+        // Right side - Action buttons
+        JPanel rightControls = createButtonPanel();
+
+        controlsContainer.add(leftControls, BorderLayout.WEST);
+        controlsContainer.add(rightControls, BorderLayout.EAST);
+
+        controlPanel.add(controlsContainer);
         return controlPanel;
     }
 
     private JPanel createFilterPanel() {
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        filterPanel.setBackground(Color.WHITE);
-        filterPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                "Packet Filters",
-                TitledBorder.LEFT,
-                TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 12),
-                PRIMARY_COLOR
-        ));
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        filterPanel.setBackground(BG_SECONDARY);
 
-        // Create styled filter buttons
-        tcpBtn = createStyledButton("🔴 TCP Only", SECONDARY_COLOR);
-        udpBtn = createStyledButton("🟢 UDP Only", SECONDARY_COLOR);
-        allBtn = createStyledButton("🔄 Show All", ACCENT_COLOR);
+        JLabel filterLabel = new JLabel("Filter:");
+        filterLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        filterLabel.setForeground(TEXT_SECONDARY);
 
-        filterPanel.add(tcpBtn);
-        filterPanel.add(udpBtn);
-        filterPanel.add(allBtn);
+        // Create modern dropdown
+        String[] filters = {"All Packets", "TCP Only", "UDP Only"};
+        filterDropdown = new JComboBox<>(filters);
+        filterDropdown.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        filterDropdown.setBackground(BG_ELEVATED);
+        filterDropdown.setForeground(TEXT_PRIMARY);
+        filterDropdown.setPreferredSize(new Dimension(150, 36));
+        filterDropdown.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+        filterDropdown.setFocusable(false);
+
+        // Custom renderer for dropdown
+        filterDropdown.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setBackground(isSelected ? ACCENT_PRIMARY : BG_ELEVATED);
+                setForeground(TEXT_PRIMARY);
+                setBorder(new EmptyBorder(8, 12, 8, 12));
+                return this;
+            }
+        });
+
+        filterDropdown.addActionListener(e -> refreshTable(getFilterFromDropdown()));
+
+        filterPanel.add(filterLabel);
+        filterPanel.add(filterDropdown);
 
         return filterPanel;
     }
 
+    private PacketFilter getFilterFromDropdown() {
+        String selected = (String) filterDropdown.getSelectedItem();
+        switch (selected) {
+            case "TCP Only":
+                return p -> p.getType().equals("TCP");
+            case "UDP Only":
+                return p -> p.getType().equals("UDP");
+            default:
+                return p -> true;
+        }
+    }
+
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
-        buttonPanel.setBackground(BACKGROUND_COLOR);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        buttonPanel.setBackground(BG_SECONDARY);
 
-        // Create styled action buttons
-        startBtn = createStyledButton("▶️ Start Capture", ACCENT_COLOR);
-        stopBtn = createStyledButton("⏹️ Stop Capture", DANGER_COLOR);
-        clearBtn = createStyledButton("🗑️ Clear Log", new Color(241, 196, 15));
-        saveBtn = createStyledButton("💾 Save Log", new Color(155, 89, 182));
+        // Create modern buttons
+        startBtn = createModernButton("Start", ACCENT_SUCCESS, "▶");
+        stopBtn = createModernButton("Stop", ACCENT_DANGER, "■");
+        clearBtn = createModernButton("Clear", ACCENT_WARNING, "✕");
+        saveBtn = createModernButton("Export", ACCENT_PRIMARY, "↓");
 
-        // Initially disable stop button
         stopBtn.setEnabled(false);
 
         buttonPanel.add(startBtn);
@@ -235,29 +348,53 @@ public class SnifferGUI extends JFrame {
         buttonPanel.add(clearBtn);
         buttonPanel.add(saveBtn);
 
-        // Add action listeners
         setupButtonActions();
 
         return buttonPanel;
     }
 
-    private JButton createStyledButton(String text, Color backgroundColor) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setBackground(backgroundColor);
+    private JButton createModernButton(String text, Color color, String icon) {
+        JButton button = new JButton(icon + "  " + text);
+        button.setFont(new Font("SansSerif", Font.BOLD, 13));
+        button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(140, 40));
+        button.setPreferredSize(new Dimension(110, 36));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
-        // Add hover effects
+        // Smooth hover effects
         button.addMouseListener(new java.awt.event.MouseAdapter() {
+            private Timer hoverTimer;
+            private float alpha = 1.0f;
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(backgroundColor.darker());
+                if (hoverTimer != null) hoverTimer.stop();
+                hoverTimer = new Timer(10, e -> {
+                    alpha = Math.max(0.85f, alpha - 0.03f);
+                    button.setBackground(adjustAlpha(color, alpha));
+                    if (alpha <= 0.85f) ((Timer) e.getSource()).stop();
+                });
+                hoverTimer.start();
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(backgroundColor);
+                if (hoverTimer != null) hoverTimer.stop();
+                hoverTimer = new Timer(10, e -> {
+                    alpha = Math.min(1.0f, alpha + 0.03f);
+                    button.setBackground(adjustAlpha(color, alpha));
+                    if (alpha >= 1.0f) ((Timer) e.getSource()).stop();
+                });
+                hoverTimer.start();
+            }
+
+            private Color adjustAlpha(Color c, float factor) {
+                return new Color(
+                        (int) (c.getRed() * factor),
+                        (int) (c.getGreen() * factor),
+                        (int) (c.getBlue() * factor)
+                );
             }
         });
 
@@ -269,56 +406,82 @@ public class SnifferGUI extends JFrame {
             startGenerator();
             startBtn.setEnabled(false);
             stopBtn.setEnabled(true);
-            statusLabel.setText("🔴 Capturing...");
-            statusLabel.setForeground(ACCENT_COLOR);
+            statusLabel.setText("● Capturing");
+            statusLabel.setForeground(ACCENT_SUCCESS);
         });
 
         stopBtn.addActionListener(e -> {
             stopGenerator();
             startBtn.setEnabled(true);
             stopBtn.setEnabled(false);
-            statusLabel.setText("⏹️ Stopped");
-            statusLabel.setForeground(DANGER_COLOR);
+            statusLabel.setText("● Stopped");
+            statusLabel.setForeground(TEXT_SECONDARY);
         });
-
-        tcpBtn.addActionListener(e -> refreshTable(p -> p.getType().equals("TCP")));
-        udpBtn.addActionListener(e -> refreshTable(p -> p.getType().equals("UDP")));
-        allBtn.addActionListener(e -> refreshTable(p -> true));
 
         saveBtn.addActionListener(e -> {
             try {
                 saveLog();
-                JOptionPane.showMessageDialog(this,
-                        "Packet log saved successfully to 'packets.txt'",
-                        "Save Successful",
+                showModernDialog("Export Successful",
+                        "Packet log exported to 'packets.txt'",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Error saving file: " + ex.getMessage(),
-                        "Save Error",
+                showModernDialog("Export Failed",
+                        "Error: " + ex.getMessage(),
                         JOptionPane.ERROR_MESSAGE);
             }
         });
 
         clearBtn.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want to clear all captured packets?",
-                    "Confirm Clear",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
+            int result = showModernConfirmDialog(
+                    "Clear All Packets?",
+                    "This will permanently delete all captured packets from memory.",
+                    "Clear", "Cancel"
+            );
 
             if (result == JOptionPane.YES_OPTION) {
                 sniffer.clear();
-                refreshTable(p -> true);
+                refreshTable(getFilterFromDropdown());
                 updateStatus();
             }
         });
     }
 
+    private void showModernDialog(String title, String message, int type) {
+        JOptionPane pane = new JOptionPane(message, type);
+        JDialog dialog = pane.createDialog(this, title);
+        dialog.getContentPane().setBackground(BG_SECONDARY);
+        dialog.setVisible(true);
+    }
+
+    private int showModernConfirmDialog(String title, String message, String yesText, String noText) {
+        Object[] options = {yesText, noText};
+        JOptionPane pane = new JOptionPane(
+                message,
+                JOptionPane.WARNING_MESSAGE,
+                JOptionPane.YES_NO_OPTION,
+                null,
+                options,
+                options[1]
+        );
+        JDialog dialog = pane.createDialog(this, title);
+        dialog.getContentPane().setBackground(BG_SECONDARY);
+        dialog.setVisible(true);
+
+        Object selected = pane.getValue();
+        if (selected == null) return JOptionPane.CLOSED_OPTION;
+
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].equals(selected)) {
+                return i == 0 ? JOptionPane.YES_OPTION : JOptionPane.NO_OPTION;
+            }
+        }
+        return JOptionPane.CLOSED_OPTION;
+    }
+
     private void startGenerator() {
         if (executor != null && !executor.isShutdown()) return;
         executor = Executors.newSingleThreadExecutor();
-        generator = new PacketGenerator(sniffer, 500); // 500 ms delay
+        generator = new PacketGenerator(sniffer, 500);
         executor.submit(generator);
     }
 
@@ -336,9 +499,8 @@ public class SnifferGUI extends JFrame {
 
     private void updateStatus() {
         int count = sniffer.getAll().size();
-        packetCountLabel.setText("📊 Packets: " + count);
+        packetCountLabel.setText(count + " packet" + (count != 1 ? "s" : ""));
 
-        // Update button states based on packet count
         clearBtn.setEnabled(count > 0);
         saveBtn.setEnabled(count > 0);
     }
@@ -357,11 +519,5 @@ public class SnifferGUI extends JFrame {
             fw.write("\n=== End of Log ===");
         }
     }
+}
 
-//    public static void main(String[] args) {
-//        // Example usage
-//        SwingUtilities.invokeLater(() -> {
-//            Sniffer sniffer = new Sniffer();
-//            new SnifferGUI(sniffer).setVisible(true);
-//        });
-    }
