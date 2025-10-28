@@ -1,59 +1,134 @@
-# 🌐 Network Packet Sniffer  
+# 🌐 Network Packet Sniffer
 
-A **powerful and intuitive Network Packet Sniffer** built with **Java and Swing**.  
-This application captures, analyzes, and displays **network traffic in real-time**.  
-Developed as a comprehensive project for the **Object-Oriented Programming (OOP) course** at **Vishwakarma Institute of Technology, Pune**.  
+![WhatsApp Image 2025-10-27 at 10 45 54_2151b60b](https://github.com/user-attachments/assets/eaa7fdd7-4990-4664-893f-27f2971aeac5)
 
 ---
 
-## ✨ Key Features
-- 🖥️ **Live Packet Capture** – Select a network interface and watch packets roll in live.  
-- 📊 **Detailed Analysis** – View packet details including source/destination IP, protocol, and length.  
-- 🖱️ **Interactive UI** – A user-friendly Swing GUI with a sortable table and a detailed packet view.  
-- 💾 **Save & Export** – Save captured sessions to a `.csv` file for later analysis.  
-- 🏃 **Multithreaded Performance** – Dedicated thread for packet sniffing ensures smooth and responsive UI.  
+## 📘 Overview
+
+The **Network Packet Sniffer** is a Java-based desktop application designed to **capture, analyze, and display live network traffic** in real time.  
+It provides insights into various protocols such as **TCP**, **UDP**, and **ICMP**, helping users understand how data flows across their system.
+
+This project demonstrates the implementation of **Java networking, multithreading, and GUI concepts** — making it both educational and practical.
 
 ---
 
-## 🎓 OOP Syllabus Mapping  
+## 🎯 Objectives
 
-This project is meticulously designed to apply concepts from every **unit of the OOP in Java syllabus (A.Y. 2025-26).**
-
-| Unit | Syllabus Topic | Project Implementation (Code File) |
-|------|----------------|-------------------------------------|
-| **1** | OOP & Java Basics | `Main.java` (main method), `PacketInfo.java` (Class, Objects, Encapsulation), `PacketParser.java` (Static Methods), Constructors used in all classes |
-| **2** | Arrays, Strings, Methods | `PacketParser.java` (String manipulation for IPs), `SnifferEngine.java` (methods for capturing data), `SnifferUI.java` (Arrays for JComboBox) |
-| **3** | Inheritance & Polymorphism | Polymorphism from **Pcap4j library** – handling `TcpPacket`, `UdpPacket` via generic `Packet` interface |
-| **4** | Abstraction & Inner Types | `PacketListener` in `SnifferEngine.java` implemented as **lambda** (modern abstraction of anonymous inner class) |
-| **5** | Exception Handling, Collections & Threads | `SnifferEngine.java` (implements Runnable, try-catch), `SnifferUI.java` (starts new Thread), `ArrayList` to store packets |
-| **6** | File Handling, GUI & Java 8 Features | `SnifferUI.java` (Swing GUI, File I/O with `FileWriter`), Lambda for button listeners, **Stream API** for saving data |
+- Capture real-time network packets.
+- Analyze and categorize packets by protocol.
+- Display detailed packet information through a graphical interface.
+- Provide filtering options for specific protocols.
+- Help students understand how low-level network communication works.
 
 ---
 
-## 🛠️ Technology Stack  
+## ⚙️ Features
 
-- **Core Language:** Java  
-- **GUI Framework:** Java Swing  
-- **Packet Capture Library:** [Pcap4j](https://www.pcap4j.org/)  
-- **Build & Dependency Management:** Apache Maven  
+✅ Live packet capturing using **Pcap4J Library**  
+✅ Packet categorization into **TCP**, **UDP**, and **ICMP**  
+✅ Real-time packet count display  
+✅ Multi-threaded background capturing for smooth UI performance  
+✅ Search and filter packets dynamically  
+✅ Simple, clean **Swing-based GUI**  
+✅ Option to **export captured data**
 
 ---
 
-## 🚀 Getting Started  
+## 🧠 Concept Mapping (Java Concepts Used)
 
-Follow these instructions to set up and run the project locally.  
+| Syllabus Topic | Project Implementation |
+|----------------|------------------------|
+| **OOP & Java Basics** | `Main.java`, `PacketInfo.java` (Classes, Objects, Encapsulation) |
+| **Arrays, Strings, Methods** | `PacketParser.java`, `SnifferEngine.java`, `SnifferUI.java` |
+| **Inheritance & Polymorphism** | `TcpPacket`, `UdpPacket` classes (via Pcap4J generic interface) |
+| **Abstraction & Inner Types** | Lambda expressions and anonymous inner classes in listeners |
+| **Exception Handling, Collections & Threads** | `SnifferEngine.java` (Runnable, try-catch, ArrayList for packets) |
+| **File Handling, GUI & Java 8 Features** | Swing GUI, FileWriter for saving, Stream API for processing |
 
-### 🔧 Prerequisites  
-- **Java Development Kit (JDK) 8 or higher**  
-  - Ensure your `JAVA_HOME` environment variable is set.  
-- **IntelliJ IDEA** (Community or Ultimate edition).  
-- **Npcap (Windows users only)**  
-  - [Download here](https://nmap.org/npcap/)  
-  - ✅ Select **“Install Npcap in WinPcap API-compatible Mode”** during installation.  
+---
 
-### 📥 Installation & Setup  
+## 🧩 Technologies Used
 
-```bash
-# Clone the repository
-git clone https://github.com/your-username/NetworkPacketSniffer.git
-cd NetworkPacketSniffer
+| Category | Technology |
+|-----------|-------------|
+| Language | **Java (JDK 17+)** |
+| GUI | **Java Swing** |
+| Library | **Pcap4J** |
+| Threading | **Java Threads (Runnable Interface)** |
+| IDE | IntelliJ IDEA / Eclipse / VS Code |
+| Platform | Windows / Linux |
+
+---
+
+## 🚀 How It Works
+
+1. The application initializes a **network interface** using Pcap4J.
+2. It starts a **background thread** to continuously capture live packets.
+3. Each packet is **parsed and classified** (TCP / UDP / ICMP).
+4. The parsed details are **displayed in the GUI table** in real-time.
+5. The user can **filter, pause, or export** the captured data.
+
+---
+
+## 🖥️ User Interface Preview
+
+| Interface | Screenshot |
+|------------|-------------|
+| **Home / Capture Screen** | ![Capture Screen](#) |
+| **Packet Details View** | ![Packet Details](#) |
+| **Filtered Results / Logs** | ![Filtered Results](#) |
+
+---
+
+## 🧵 Background Thread Explanation
+
+The packet capture process runs on a **background thread** using the `Runnable` interface.  
+This ensures the GUI remains **responsive** while packets are being captured.  
+The thread continuously listens for incoming packets and updates the GUI in real time.
+
+---
+
+## 🌐 Protocols Handled
+
+| Protocol | Description |
+|-----------|-------------|
+| **TCP (Transmission Control Protocol)** | Reliable, connection-oriented (e.g., websites, emails). |
+| **UDP (User Datagram Protocol)** | Fast, connectionless (e.g., streaming, games). |
+| **ICMP (Internet Control Message Protocol)** | Used for diagnostics (e.g., ping commands). |
+
+---
+
+## 🏗️ Project Structure
+
+📂 NetworkPacketSniffer
+┣ 📜 Main.java
+┣ 📜 SnifferUI.java
+┣ 📜 SnifferEngine.java
+┣ 📜 PacketParser.java
+┣ 📜 PacketInfo.java
+┣ 📜 resources/
+┗ 📜 README.md
+---
+
+## ⚡ Installation & Setup
+
+1. Clone this repository  
+   ```bash
+   git clone https://github.com/your-username/Network-Packet-Sniffer.git
+Install Java (JDK 17 or above)
+
+Download and add Pcap4J library to your project dependencies
+
+Run Main.java
+
+Start capturing packets 🎯
+
+📈 Future Enhancements
+🔍 Add protocol-specific filtering (e.g., HTTP, DNS)
+
+💾 Save session data in .csv format
+
+🌐 Develop web-based dashboard for packet visualization
+
+🧠 Integrate AI for anomaly detection
